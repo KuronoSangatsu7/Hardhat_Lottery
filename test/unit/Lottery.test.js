@@ -1,4 +1,3 @@
-const { inputToConfig } = require("@ethereum-waffle/compiler")
 const { expect, assert } = require("chai")
 const { deployments, getNamedAccounts, ethers, network } = require("hardhat")
 const { developmentChains, networkConfig } = require("../../helper-hardhat-config")
@@ -101,7 +100,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
 
               it("returns false if enough time hasn't passed", async function () {
                   await lottery.enterLottery({ value: lotteryEntranceFee })
-                  await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+                  await network.provider.send("evm_increaseTime", [interval.toNumber() - 1])
                   await network.provider.send("evm_mine", [])
                   const { upkeepNeeded } = await lottery.callStatic.checkUpkeep("0x")
                   expect(upkeepNeeded).to.be.false
