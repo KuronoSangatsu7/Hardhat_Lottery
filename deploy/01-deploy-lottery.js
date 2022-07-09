@@ -1,5 +1,6 @@
 const { network, ethers } = require("hardhat")
 const { networkConfig, developmentChains } = require("../helper-hardhat-config")
+const {verify} = require("../utils/verify")
 
 const VRF_SUB_FUND_AMOUNT = ethers.utils.parseEther("2")
 
@@ -10,10 +11,10 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
     
     let vrfCoordinatorV2Address, subscriptionId
 
-    if (developmentChains.includes(network.config.name)) {
+    if (developmentChains.includes(network.name)) {
         const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
         vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address
-
+        
         const transactionResponse = await vrfCoordinatorV2Mock.createSubscription()
         const transactionReceipt = await transactionResponse.wait(1)
 
@@ -37,4 +38,12 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
         log: true,
         waitConfirmations: network.config.blockConfirmations || 1,
     })
+
+    if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+        log("Verifying...")
+        await verify(lottery.address, args)
+    }
+    log("-----------------------------------------------------------")
 }
+
+module.exports.tags = ["all", "lottery"]

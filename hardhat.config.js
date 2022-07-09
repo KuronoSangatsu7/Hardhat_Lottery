@@ -9,9 +9,10 @@ require("dotenv").config()
 const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL
 const MUMBAI_PRIVATE_KEY = process.env.MUMBAI_PRIVATE_KEY
 
-const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
-
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
+
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
 
 module.exports = {
     defaultNetwork: "hardhat",
@@ -36,5 +37,20 @@ module.exports = {
         player: {
             default: 1,
         }
+    },
+    gasReporter: {
+        enabled: false,
+        currency: "USD",
+        outputFile: "gas-report.txt",
+        noColors: true,
+        // coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    },
+    mocha: {
+        timeout: 500000, // 500 seconds 
+    },
+    etherscan: {
+        apiKey: {
+            polygon: POLYGONSCAN_API_KEY,
+        },
     },
 }
