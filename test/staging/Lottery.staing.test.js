@@ -12,12 +12,12 @@ developmentChains.includes(network.name)
               deployer = (await getNamedAccounts()).deployer
               lottery = await ethers.getContract("Lottery", deployer)
               lotteryEntranceFee = await lottery.getEntranceFee()
-              accounts = ethers.getSigners()
+              accounts = await ethers.getSigners()
           })
 
           describe("fulfillRandomWords", async function () {
               it("works with live chainlink keepers and VRF to get a random winner", async function () {
-                  const startingTimeStamp = await lottery.getLatestTimeStamp
+                  const startingTimeStamp = await lottery.getLatestTimeStamp()
 
                   await new Promise(async (resolve, reject) => {
                       lottery.once("WinnerPicked", async () => {
@@ -33,7 +33,7 @@ developmentChains.includes(network.name)
                               expect(recentWinner.toString()).to.equal(accounts[0].address)
                               expect(lotteryState).to.equal(0)
                               expect(winnerEndingBalance.toString()).to.equal(
-                                  winnerStartingBalance.add(lotteryEntranceFee).toString()
+                                  (winnerStartingBalance.add(lotteryEntranceFee)).toString()
                               )
                               expect(endingTimeStamp.toNumber()).to.be.greaterThan(
                                   startingTimeStamp.toNumber()
@@ -44,7 +44,7 @@ developmentChains.includes(network.name)
                               reject(e)
                           }
                       })
-
+                      const khra = await ethers.provider.getBalance(deployer)
                       await lottery.enterLottery({ value: lotteryEntranceFee })
                       const winnerStartingBalance = await accounts[0].getBalance()
                   })
